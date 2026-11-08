@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="《換我們為妳點燈》">
+<title>《換我們為妳點燈》</title>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  @font-face{
+    font-family:"HanSerifSub";
+    src:url("fonts/serif-sub.woff2") format("woff2");
+    font-weight:400; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:"HanSerifSub";
+    src:url("fonts/serif-sub-bold.woff2") format("woff2");
+    font-weight:700; font-style:normal; font-display:swap;
+  }
+  :root{
+    color-scheme: light only;
+    --bg:#FBF7EE; --ink:#3B332A; --soft:#77694F; --faint:#A08D6C;
+    --gold:#C0A062; --gold-deep:#96762F; --hair:#E7DCC4;
+  }
+  @media (prefers-color-scheme: dark){
+    body{ background:#FBF7EE !important; color:#3B332A !important; }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html, body{overscroll-behavior:none}
+  body{
+    margin:0; color:var(--ink); background:var(--bg);
+    font-family:"HanSerifSub","Songti TC","Songti SC","STSong","Noto Serif TC","Noto Serif CJK TC","Source Han Serif TC",serif;
+    font-size:17.5px; line-height:1.9; letter-spacing:.02em;
+    -webkit-font-smoothing:antialiased;
+    opacity:0; animation:pagein 1.4s ease .4s forwards;
+  }
+  @keyframes pagein{to{opacity:1}}
+  /* 暖白底色上的一暈燈光——純 CSS，無素材 */
+  .glow{
+    position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(90% 46% at 50% 10%, rgba(233,201,120,.20) 0, rgba(233,201,120,0) 70%),
+      linear-gradient(180deg, #FDFBF5 0%, #FBF7EE 55%, #F8F1E0 100%);
+    animation:glowbreath 26s ease-in-out infinite alternate;
+  }
+  @keyframes glowbreath{from{opacity:.8}to{opacity:1}}
+
+  main{
+    max-width:620px; margin:0 auto;
+    padding:calc(44px + env(safe-area-inset-top)) max(32px,8.5vw) calc(56px + env(safe-area-inset-bottom));
+  }
+
+  /* ---------- 第一屏 ---------- */
+  .hero{
+    min-height:100vh; min-height:100svh; min-height:100dvh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; margin-top:calc(-44px - env(safe-area-inset-top));
+  }
+  .lamp-dot{
+    width:11px; height:11px; border-radius:50%; background:var(--gold);
+    box-shadow:0 0 30px 12px rgba(233,201,120,.5);
+    animation:halo 4s ease-in-out infinite; margin-bottom:34px;
+  }
+  @keyframes halo{0%,100%{opacity:.55}50%{opacity:1}}
+  h1{font-size:23px; line-height:1.4; font-weight:400; letter-spacing:.14em; text-indent:.14em; margin:0 0 16px;}
+  .hero-sub{font-size:13px; line-height:1.6; letter-spacing:.18em; text-indent:.18em; color:rgba(59,51,42,.55); margin:0 0 68px;}
+  .listen-btn{
+    display:flex; flex-direction:column; align-items:center; gap:18px;
+    background:none; border:none; cursor:pointer; padding:12px;
+    font-family:inherit; color:var(--ink); -webkit-tap-highlight-color:transparent;
+  }
+  .ring-wrap{position:relative; width:78px; height:78px; animation:sway 4s ease-in-out infinite;}
+  @keyframes sway{0%,100%{transform:scale(.98)}50%{transform:scale(1.02)}}
+  .ring-wrap::before{ /* 呼吸光暈 */
+    content:""; position:absolute; inset:-16px; border-radius:50%;
+    background:radial-gradient(circle, rgba(233,201,120,.5) 0, rgba(233,201,120,0) 68%);
+    animation:halo 4s ease-in-out infinite;
+  }
+  .ring-wrap.buffering::before{animation-duration:1.3s}
+  .ring{
+    position:relative; width:78px; height:78px; border-radius:50%;
+    border:1px solid var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    transition:background .8s ease;
+  }
+  .ring .tri{
+    width:0; height:0; margin-left:4px;
+    border-left:15px solid var(--gold-deep);
+    border-top:9px solid transparent; border-bottom:9px solid transparent;
+  }
+  .ring .bars{display:none; align-items:flex-end; gap:3.5px; height:18px;}
+  .ring .bars i{width:3px; background:var(--gold-deep); border-radius:2px; animation:eq 1.1s ease-in-out infinite;}
+  .ring .bars i:nth-child(1){height:9px}
+  .ring .bars i:nth-child(2){height:16px; animation-delay:.18s}
+  .ring .bars i:nth-child(3){height:11px; animation-delay:.36s}
+  .ring .bars i:nth-child(4){height:15px; animation-delay:.54s}
+  @keyframes eq{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1)}}
+  .playing .ring{background:radial-gradient(circle,rgba(192,160,98,.18) 0,rgba(192,160,98,0) 70%)}
+  .playing .ring .tri{display:none}
+  .playing .ring .bars{display:flex}
+  .listen-word{font-size:15px; letter-spacing:.3em; text-indent:.3em; transition:opacity .6s ease;}
+  .playing .listen-word{opacity:.3}
+  .whisper{
+    margin:30px 0 0; font-size:11px; color:var(--faint); letter-spacing:.14em; text-indent:.14em;
+    font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;
+  }
+  .play-hint{
+    margin:14px 0 0; font-size:11px; color:var(--faint); letter-spacing:.1em; text-indent:.1em;
+    font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;
+    opacity:0; transition:opacity .6s ease; pointer-events:none;
+  }
+  .play-hint.show{opacity:1}
+  .mini-toggle{
+    position:fixed; right:calc(14px + env(safe-area-inset-right)); bottom:calc(14px + env(safe-area-inset-bottom));
+    z-index:40; width:44px; height:44px; border:none; background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .8s ease;
+    font-size:13px; color:var(--gold-deep);
+  }
+  .mini-toggle.show{opacity:.3; pointer-events:auto}
+  .mini-toggle .mini-ring{
+    position:absolute; inset:6px; border:1px solid var(--gold); border-radius:50%;
+  }
+  .playing .mini-toggle .mini-ring{animation:sway 4s ease-in-out infinite}
+
+  /* ---------- 段落（連續的一封信，無多餘裝飾） ---------- */
+  section{padding:64px 0 0}
+  .reveal{opacity:1}
+  .js .reveal{opacity:0; transform:translateY(14px); transition:opacity 1.1s ease, transform 1.1s ease}
+  .js .reveal.in{opacity:1; transform:none}
+  h2{font-size:17px; font-weight:700; letter-spacing:.14em; margin:0 0 22px;}
+  .ded-title{font-size:18.5px; font-weight:700; letter-spacing:.1em; margin:0 0 26px;}
+  .dedication p{font-size:17.5px; margin:0 0 26px;}
+  .dedication .signoff{text-align:right; margin-top:34px; color:var(--soft);}
+  .song-ded{
+    font-size:13.5px; color:var(--faint); letter-spacing:.12em; margin:-8px 0 30px;
+    font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;
+  }
+  .invite{color:var(--soft); font-size:15.5px; margin:0 0 18px;}
+  video{width:100%; display:block; background:#2A2118; aspect-ratio:16/9; border:none;}
+  video[data-pending]{display:none;} /* 尚無影像時，播放器不佔位、不露黑框 */
+  .frame{
+    aspect-ratio:16/9; display:flex; flex-direction:column; gap:14px;
+    align-items:center; justify-content:center; text-align:center;
+    background:linear-gradient(180deg,#FBF3DC 0,#F7EBCB 55%,#F1E3C2 100%);
+    border:1px solid var(--hair);
+  }
+  .frame .f-dot{
+    width:13px; height:13px; border-radius:50%; background:var(--gold);
+    box-shadow:0 0 34px 13px rgba(233,201,120,.55);
+    animation:halo 4s ease-in-out infinite;
+  }
+  .frame .f-word{color:#5C5142; font-size:16px; letter-spacing:.3em; text-indent:.3em;}
+  .frame .f-sub{color:#8A7B5F; font-size:13px; letter-spacing:.14em; text-indent:.14em;
+    font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;}
+
+  /* 詩篇 */
+  .lyrics{max-width:21em;}
+  .lyrics p{
+    margin:0 0 10px; font-size:17px; line-height:2.2; letter-spacing:.08em;
+    color:rgba(59,51,42,.32);
+    transition:color .6s cubic-bezier(.25,1,.5,1), text-shadow .6s cubic-bezier(.25,1,.5,1);
+  }
+  .lyrics p.sung{color:rgba(59,51,42,.52)}
+  .lyrics p.now{color:var(--ink); text-shadow:0 0 16px rgba(192,160,98,.25)}
+  .lyrics .stanza{margin-bottom:32px}
+  .lyrics .stanza-name{
+    color:var(--gold-deep); font-size:13px; letter-spacing:.22em; margin-bottom:12px;
+    font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;
+  }
+
+  /* 頁尾的一句話 */
+  .lamp-line{
+    text-align:center; font-size:18.5px; line-height:2.0; letter-spacing:.16em; text-indent:.16em;
+    color:var(--ink); margin:12px 0 0; font-weight:400;
+  }
+  #lamp-sec .lamp-dot{margin:0 auto 26px;}
+
+  /* ---------- 結尾 ---------- */
+  .closing{
+    margin-top:84px; padding-top:8px; text-align:center;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .replay{
+    background:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:14px; color:var(--faint); letter-spacing:.2em; text-indent:.2em; padding:12px;
+    min-height:44px;
+  }
+  .footnote{
+    margin-top:44px; padding-top:20px; border-top:1px solid var(--hair);
+    font-size:12.5px; line-height:1.85; color:#77694F; text-align:center;
+    font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;
+  }
+  .made-date{
+    margin:30px 0 0; font-size:11.5px; color:var(--faint);
+    font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;
+  }
+  .save{
+    display:flex; align-items:center; justify-content:center; min-height:44px;
+    margin-top:20px; font-size:12.5px; color:var(--faint); text-decoration:none;
+    font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;
+    padding:6px 10px;
+  }
+  /* 矮螢幕（小手機，或 LINE 內置瀏覽器工具列佔高時）：首屏收緊間距，
+     讓燈、標題、按鈕、耳機提示同屏完整出現 */
+  @media (max-height: 700px){
+    .lamp-dot{ margin-bottom: 22px; }
+    .hero-sub{ margin-bottom: 34px; }
+    .whisper{ margin-top: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    body{animation:none; opacity:1}
+    .glow,.ring-wrap,.ring-wrap::before,.frame .f-dot,.ring .bars i,.lamp-dot{animation:none}
+    .js .reveal{opacity:1; transform:none; transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+<main>
+  <!-- 第一屏：歌名、一句小字、一個聆聽入口 -->
+  <div class="hero">
+    <div class="lamp-dot" aria-hidden="true"></div>
+    <h1>《換我們為妳點燈》</h1>
+    <p class="hero-sub">給三姑的一首歌</p>
+    <button class="listen-btn" id="listenBtn" type="button" aria-label="聽一聽">
+      <span class="ring-wrap" id="ringWrap"><span class="ring"><span class="tri"></span><span class="bars"><i></i><i></i><i></i><i></i></span></span></span>
+      <span class="listen-word" id="listenWord">聽一聽</span>
+    </button>
+    <p class="whisper">戴上耳機，效果更佳</p>
+    <p class="play-hint" id="playHint">若未出聲，請再點一次</p>
+  </div>
+
+  <audio id="song" controls preload="metadata" src="song.mp3"></audio>
+
+  <!-- 獻詞（軍師原文，逐字） -->
+  <section class="reveal dedication" id="dedication">
+    <p class="ded-title">獻給我們最親愛的三姑</p>
+    <p>親愛的三姑：</p>
+    <p>從我們還是孩子的時候，妳就一直用愛陪伴著我們。那些年裡，妳給我們的關心、照顧與支持，我們始終記在心上。</p>
+    <p>如今，我們都長大了。無論相隔多遠，妳永遠是我們珍愛的家人。</p>
+    <p class="ded-mid">往後的日子，換我們陪伴妳、支持妳，做妳可以放心依靠的家人。</p>
+    <p>願天父賜妳平安、力量與喜樂。願妳自由自在地生活，遇見更多美好，擁有屬於自己的幸福。</p>
+    <p>這首歌，是我們五個人一起送給妳的愛。</p>
+    <p class="signoff">—— 秀卿、秀玲、建良、秀慧、建裕</p>
+  </section>
+
+  <!-- 歌詞 -->
+  <section class="reveal" id="lyrics-sec">
+    <h2>歌詞</h2>
+    <p class="song-ded">獻給親愛的三姑｜五位晚輩共同獻唱</p>
+    <div class="lyrics" id="lyrics">
+      <div class="stanza">
+        <p class="stanza-name">主歌一</p>
+        <p data-t="26.0">小時候的路，有妳牽著走</p>
+        <p data-t="31.8">春風吹過門前，歲月慢慢流</p>
+        <p data-t="40.2">妳把溫暖藏在平凡的日子裡</p>
+        <p data-t="46.8">讓我們帶著愛，勇敢往前走</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">主歌二</p>
+        <p data-t="54.4">一年又一年，我們各自遠行</p>
+        <p data-t="61.4">走過多少城市，看過多少風景</p>
+        <p data-t="68.4">回頭望那盞燈，依然亮在心底</p>
+        <p data-t="74.2">才懂妳給的愛，是一生的光明</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">副歌</p>
+        <p data-t="83.9">親愛的姑姑，換我們為妳點燈</p>
+        <p data-t="90.0">從今往後的路，讓我們陪妳走</p>
+        <p data-t="96.6">妳曾為我們遮風，陪我們走過寒冬</p>
+        <p data-t="103.4">如今換我們守候，願妳笑容依舊</p>
+        <p data-t="111.7">親愛的姑姑，願妳的心自由</p>
+        <p data-t="117.7">無論歲月如何，妳的光依然溫柔</p>
+        <p data-t="124.2">願平安隨著妳，願喜樂住在心中</p>
+        <p data-t="131.7">妳值得世間美好，值得幸福長久</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">橋段</p>
+        <p data-t="142.6">溫哥華的雨，蒙特婁的雪</p>
+        <p data-t="149.6">隔著千山萬水，親情從未走遠</p>
+        <p data-t="157.6">妳看，春天又來了，花正開在窗前</p>
+        <p data-t="163.2">我們都在這裡，愛妳直到永遠</p>
+      </div>
+      <div class="stanza">
+        <p class="stanza-name">尾聲</p>
+        <p data-t="168.8">親愛的姑姑，換我們為妳點燈</p>
+        <p data-t="177.2">願妳往後的每一天，都有幸福相逢</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 畫面（MTV）：影像完成後放在這裡；先以一盞燈光相候 -->
+  <section class="reveal" id="mtv-sec">
+    <p class="invite">歌之外，也為妳準備了一段影像</p>
+    <div class="frame" id="mtvFrame">
+      <span class="f-dot"></span>
+      <span class="f-word">影像正在製作</span>
+      <span class="f-sub">完成後，放在這裡陪妳聽歌</span>
+    </div>
+    <!-- 影像完成後：給下面的 video 加上 src="mtv.mp4" 並移除 data-pending 屬性，播放器即出現；步行與 hold 邏輯不需改動 -->
+    <video id="mtv" controls preload="none" playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5-page" data-pending>
+      您的瀏覽器不支援影片播放。
+    </video>
+  </section>
+
+  <!-- 頁尾的一句話 -->
+  <section class="reveal" id="lamp-sec">
+    <div class="lamp-dot" aria-hidden="true"></div>
+    <p class="lamp-line" id="lampLine">愛不因距離而淡去，家永遠有一盞燈為妳亮著。</p>
+  </section>
+
+  <!-- 結尾 -->
+  <div class="closing" id="closing">
+    <button class="replay" id="replayBtn" type="button">再聽一遍</button>
+    <p class="footnote">製作說明：本曲歌詞由 GPT 協作撰寫；作曲與演唱——開源音樂模型 YuE 2（YuE2-3B），經 audio.cpp 在本地生成（AI 女聲演唱）。這首歌由五位晚輩一起製作，送給親愛的三姑。二〇二六年十一月。</p>
+    <a class="save" href="song.mp3" download>保存音頻</a>
+    <p class="made-date">為三姑製作於 二〇二六年十一月八日</p>
+  </div>
+<button class="mini-toggle" id="miniToggle" type="button" aria-label="播放或暫停"><span class="mini-ring"></span><span id="miniGlyph">▶</span></button>
+</main>
+
+<script>
+(function(){
+  var audio = document.getElementById('song');
+  var mtv = document.getElementById('mtv');
+  var btn = document.getElementById('listenBtn');
+  var word = document.getElementById('listenWord');
+  var ringWrap = document.getElementById('ringWrap');
+  /* JS 在場時接管播放，隱藏原生控件；JS 失效時原生控件就是後備 */
+  audio.removeAttribute('controls');
+  function safePlay(el){ var p = el.play(); if (p && p.catch) { p.catch(function(){}); } }
+  /* 微信／LINE／iOS 預解鎖：橋接就緒或第一次觸摸時先把音頻載入，避免第一次點按落空 */
+  /* 僅在尚未開始播放時 load()：播放中呼叫 load() 會把歌打斷歸零 */
+  document.addEventListener('WeixinJSBridgeReady', function(){ if (audio.paused && !started) { audio.load(); } }, false);
+  document.addEventListener('touchstart', function unlock(){
+    if (audio.paused && !started) { audio.load(); }
+    document.removeEventListener('touchstart', unlock);
+  }, { passive: true });
+
+  /* ---- 歌詞同步：rAF 採樣，提前 150ms 點亮當前行，唱過的行沉到半透明 ---- */
+  var lines = Array.prototype.slice.call(document.querySelectorAll('#lyrics p[data-t]'));
+  var rafId = null, lastActive = null;
+  function syncStep(){
+    var t = audio.currentTime + 0.15, active = null, i, p;
+    for (i = 0; i < lines.length; i++) {
+      p = lines[i];
+      var start = parseFloat(p.getAttribute('data-t'));
+      p.classList.toggle('sung', start <= t);
+      if (start <= t) { active = p; }
+    }
+    if (active !== lastActive) {
+      lines.forEach(function(el){ el.classList.toggle('now', el === active); });
+      if (active) { followLine(active); }
+      lastActive = active;
+    }
+    driveLeadStops();
+    if (!audio.paused && !audio.ended) { rafId = requestAnimationFrame(syncStep); }
+  }
+  function startSync(){ if (rafId === null) { rafId = requestAnimationFrame(syncStep); } }
+  function stopSync(){ if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; } }
+
+  /* ---- 跟隨導演：自動滑動的唯一機制（沿用生日頁面已驗證的修正版） ----
+     每一段文字都必須在自動流程中至少有一次「完整停留在可見區內」。
+     做法：定點停靠（把目標錨到視口固定比例處）＋ 落定複查（平滑滑動結束後
+     再量一次位置，出界就糾正）＋ 段落停靠（獻詞借前奏分兩站停靠；曲終依次
+     停靠影像、頁尾句、結尾）。觀眾一旦手動滑動，跟隨立即讓位。 */
+  var followSuspended = false;   /* 觀眾手動滑動後置真，重新播放時清除 */
+  var settleTimer = null;
+  function scrollBehavior(){
+    return (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth';
+  }
+  function scrollToEl(el, ratio){
+    if (!el) { return; }
+    var r = el.getBoundingClientRect();
+    var y = window.scrollY + r.top + (r.height / 2) - window.innerHeight * ratio;
+    var maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    window.scrollTo({ top: Math.min(Math.max(0, y), maxY), behavior: scrollBehavior() });
+  }
+  /* 獻詞停靠改由歌曲進度驅動（不再用牆鐘計時）：前奏約 26 秒內分三站——
+     標題、中段、落款——逐段錨定中央；暫停時進度凍結，停靠不亂跑；
+     小螢幕上每段也至少被一站完整帶入畫面。 */
+  var leadStops = [
+    { at: 0.4,  ratio: 0.30, fired: false, el: function(){ return document.querySelector('#dedication .ded-title'); } },
+    { at: 9.0,  ratio: 0.45, fired: false, el: function(){ return document.querySelector('#dedication .ded-mid'); } },
+    { at: 17.5, ratio: 0.55, fired: false, el: function(){ return document.querySelector('#dedication .signoff'); } }
+  ];
+  function driveLeadStops(){
+    if (followSuspended || audio.currentTime >= 25) { return; }
+    leadStops.forEach(function(s){
+      if (!s.fired && audio.currentTime >= s.at) { s.fired = true; scrollToEl(s.el(), s.ratio); }
+    });
+  }
+  function resetLeadStops(){ leadStops.forEach(function(s){ s.fired = false; }); }
+  function followLine(line){
+    if (followSuspended) { return; }
+    scrollToEl(line, 0.45);
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(function(){
+      if (followSuspended || !lastActive) { return; }
+      var r = lastActive.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.10 || r.bottom > window.innerHeight * 0.90) {
+        scrollToEl(lastActive, 0.45);
+      }
+    }, 850);
+  }
+  window.addEventListener('wheel', suspendFollow, { passive: true });
+  var touchStartY = null;
+  window.addEventListener('touchstart', function(e){
+    touchStartY = (e.touches && e.touches[0]) ? e.touches[0].clientY : null;
+  }, { passive: true });
+  window.addEventListener('touchmove', function(e){
+    /* 手指微抖不算手動滑動：垂直位移超過 10px 才讓位 */
+    if (touchStartY === null || !e.touches || !e.touches[0]) { return; }
+    if (Math.abs(e.touches[0].clientY - touchStartY) > 10) { touchStartY = null; suspendFollow(); }
+  }, { passive: true });
+  function suspendFollow(){
+    followSuspended = true;
+    clearTimeout(settleTimer);
+    if (walkRunning) { cancelWalk(); }
+  }
+
+  var playHint = document.getElementById('playHint');
+  var hintShown = false, awaitingPlay = false, hintTimer = null;
+  function armHint(){
+    awaitingPlay = true;
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function(){
+      if (awaitingPlay && audio.paused && !hintShown) {
+        /* 只有播放真的沒起來（仍是暫停狀態）才提示再點一次；
+           還在緩衝時 paused 已為假，提示她再點反而會把歌暫停 */
+        hintShown = true;
+        playHint.classList.add('show');
+        setTimeout(function(){ playHint.classList.remove('show'); }, 3400);
+      }
+    }, 1500);
+  }
+  btn.addEventListener('click', function(){
+    if (audio.paused) { ringWrap.classList.add('buffering'); armHint(); safePlay(audio); }
+    else { audio.pause(); }
+  });
+  var miniToggle = document.getElementById('miniToggle');
+  var miniGlyph = document.getElementById('miniGlyph');
+  var started = false;
+  miniToggle.addEventListener('click', function(){
+    if (audio.paused) { ringWrap.classList.add('buffering'); armHint(); safePlay(audio); }
+    else { audio.pause(); }
+  });
+  audio.addEventListener('play', function(){
+    document.body.classList.add('playing');
+    word.textContent = '暫停';
+    btn.setAttribute('aria-label', '暫停');
+    if (mtv && !mtv.paused) { mtv.pause(); }
+    followSuspended = false;
+    if (walkRunning) { cancelWalk(); }   /* 曲終步行途中重播：步行取消，不與新一輪跟隨打架 */
+    if (audio.currentTime < 2) { resetLeadStops(); }
+    startSync();
+  });
+  audio.addEventListener('pause', function(){
+    document.body.classList.remove('playing');
+    word.textContent = '聽一聽';
+    btn.setAttribute('aria-label', '聽一聽');
+    ringWrap.classList.remove('buffering');
+    awaitingPlay = false; clearTimeout(hintTimer);
+    if (started && !audio.ended) { miniGlyph.textContent = '▶'; }
+    stopSync();
+  });
+  audio.addEventListener('waiting', function(){ ringWrap.classList.add('buffering'); });
+  audio.addEventListener('playing', function(){
+    ringWrap.classList.remove('buffering');
+    awaitingPlay = false; clearTimeout(hintTimer); playHint.classList.remove('show');
+    started = true;
+    miniToggle.classList.add('show');
+    miniGlyph.textContent = '❚❚';
+  });
+  if (mtv) {
+    mtv.addEventListener('play', function(){ if (!audio.paused) { audio.pause(); } });
+    mtv.addEventListener('canplay', function(){
+      mtv.removeAttribute('data-pending');
+      mtv.hidden = false;
+      var fr = document.getElementById('mtvFrame');
+      if (fr) { fr.style.display = 'none'; }
+    });
+  }
+
+  audio.addEventListener('ended', function(){
+    document.body.classList.remove('playing');
+    miniGlyph.textContent = '▶';
+    stopSync();
+    lines.forEach(function(p){ p.classList.remove('now'); });
+    lastActive = null;
+    startPostSongWalk();
+  });
+  document.getElementById('replayBtn').addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: scrollBehavior() });
+    audio.currentTime = 0;
+    safePlay(audio);
+  });
+
+  /* ---- 曲終停靠：影像 → 頁尾句 → 結尾，每站停穩、停夠，再走 ----
+     影像站是正式一站：停留 9 秒等她點播；她一旦播放，流程就地暫停，
+     絕不在播放中把她拖走；看完（或暫停稍久）才繼續下一站。
+     （影像尚未放上本頁；播放器就位後，本段邏輯不需改動即可生效。） */
+  var walkRunning = false, walkIdx = -1, walkTimer = null, walkHeld = false;
+  var walkSteps = [
+    { el: function(){ return document.getElementById('mtv-sec'); }, ratio: 0.30, dwell: 9000 },
+    { el: function(){ return document.getElementById('lampLine'); }, ratio: 0.45, dwell: 4600 },
+    { el: function(){ return document.getElementById('closing'); }, ratio: 0.38, dwell: 4600 }
+  ];
+  function walkAdvance(){
+    walkTimer = null;
+    if (!walkRunning || followSuspended) { return; }
+    walkIdx++;
+    if (walkIdx >= walkSteps.length) { walkRunning = false; walkHeld = false; return; }
+    var step = walkSteps[walkIdx];
+    /* 小螢幕適配：整塊比預設錨點能容納的還高時，把錨點比例往中央收，
+       讓整塊完整入鏡（塊高不超過視口時才有解；否則維持原比例） */
+    var el = step.el(), ratio = step.ratio;
+    if (el) {
+      var h = el.getBoundingClientRect().height, vh = window.innerHeight;
+      if (h < vh) {
+        var fit = h / (2 * vh) + 0.015;
+        ratio = Math.min(Math.max(ratio, fit), 1 - fit);
+      }
+    }
+    scrollToEl(el, ratio);
+    walkTimer = setTimeout(walkAdvance, step.dwell);
+  }
+  function startPostSongWalk(){
+    if (followSuspended) { return; }
+    walkRunning = true; walkIdx = -1; walkHeld = false;
+    clearTimeout(walkTimer);
+    walkAdvance();
+  }
+  function cancelWalk(){
+    clearTimeout(walkTimer); walkTimer = null;
+    walkRunning = false; walkHeld = false;
+  }
+  if (mtv) {
+    mtv.addEventListener('play', function(){
+      /* 步行任何一站，只要影片還在畫面裡被點播，步行就地停住，不拖人 */
+      if (walkRunning) { clearTimeout(walkTimer); walkTimer = null; walkHeld = true; }
+    });
+    mtv.addEventListener('ended', function(){
+      if (walkHeld) { walkHeld = false; walkTimer = setTimeout(walkAdvance, 3000); }
+    });
+    mtv.addEventListener('pause', function(){
+      if (walkHeld && !mtv.ended) { walkHeld = false; walkTimer = setTimeout(walkAdvance, 8000); }
+    });
+  }
+
+  /* ---- 段落入場 ---- */
+  var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function(es){
+    es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 }) : null;
+  document.querySelectorAll('.reveal').forEach(function(el){
+    if (io) { io.observe(el); } else { el.classList.add('in'); }
+  });
+})();
+</script>
+</body>
+</html>
