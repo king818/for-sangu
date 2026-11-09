@@ -134,7 +134,18 @@
   h2{font-size:17px; font-weight:700; letter-spacing:.14em; margin:0 0 22px;}
   .ded-title{font-size:18.5px; font-weight:700; letter-spacing:.1em; margin:0 0 26px;}
   .dedication p{font-size:17.5px; margin:0 0 26px;}
-  .dedication .signoff{text-align:right; margin-top:34px; color:var(--soft);}
+  /* 落款（2026-11-09 定案）：五位晚輩署名——排行／姓名／居地三行一欄，細金線＋日期；
+     .signoff 類名保留給獻詞停靠邏輯作落款錨點，勿刪 */
+  .sigblock{margin-top:46px; text-align:center;}
+  .sig-cols{display:flex; flex-wrap:wrap; justify-content:center; gap:20px 26px;}
+  .sig-col{min-width:78px; text-align:center;}
+  .sig-rank{display:block; font-size:11px; letter-spacing:.32em; text-indent:.32em; color:var(--gold-deep); margin-bottom:6px;}
+  .sig-name{display:block; font-size:20px; line-height:1.5; letter-spacing:.1em; text-indent:.1em; color:var(--ink);}
+  .sig-loc{display:block; font-size:12px; letter-spacing:.22em; text-indent:.22em; color:var(--faint); margin-top:5px;}
+  .sig-rule{display:flex; align-items:center; gap:10px; max-width:340px; margin:26px auto 15px;}
+  .sig-rule i{flex:1; height:1px; background:var(--gold); opacity:.6;}
+  .sig-rule b{flex:none; width:5px; height:5px; background:var(--gold); transform:rotate(45deg);}
+  .sig-date{font-size:14.5px; letter-spacing:.48em; text-indent:.48em; color:var(--ink);}
   .song-ded{
     font-size:13.5px; color:var(--faint); letter-spacing:.12em; margin:-8px 0 30px;
     font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;
@@ -246,7 +257,17 @@
     <p class="ded-mid">往後的日子，換我們陪伴妳、支持妳，做妳可以放心依靠的家人。</p>
     <p>願天父賜妳平安、力量與喜樂。願妳自由自在地生活，遇見更多美好，擁有屬於自己的幸福。</p>
     <p>這首歌，是我們五個人一起送給妳的愛。</p>
-    <p class="signoff">—— 秀卿、秀玲、建良、秀慧、建裕</p>
+    <div class="sigblock signoff">
+      <div class="sig-cols">
+        <div class="sig-col"><span class="sig-rank">長女</span><span class="sig-name">陳秀卿</span><span class="sig-loc">臺北</span></div>
+        <div class="sig-col"><span class="sig-rank">次女</span><span class="sig-name">陳秀玲</span><span class="sig-loc">臺北</span></div>
+        <div class="sig-col"><span class="sig-rank">長子</span><span class="sig-name">陳建良</span><span class="sig-loc">臺北</span></div>
+        <div class="sig-col"><span class="sig-rank">三女</span><span class="sig-name">陳秀慧</span><span class="sig-loc">舊金山灣區</span></div>
+        <div class="sig-col"><span class="sig-rank">么兒</span><span class="sig-name">陳建裕</span><span class="sig-loc">舊金山灣區</span></div>
+      </div>
+      <div class="sig-rule" aria-hidden="true"><i></i><b></b><i></i></div>
+      <div class="sig-date">二〇二六年十一月八日</div>
+    </div>
   </section>
 
   <!-- 歌詞 -->
