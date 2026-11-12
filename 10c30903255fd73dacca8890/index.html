@@ -181,6 +181,26 @@
   .frame .f-sub{color:#8A7B5F; font-size:13px; letter-spacing:.14em; text-indent:.14em;
     font-family:-apple-system,"PingFang TC","PingFang SC","Microsoft JhengHei","Microsoft YaHei",sans-serif;}
 
+
+  /* ---------- 影像的大按鈕（boss 2026-11-12 定版，全禮物頁同標準）：影片正下方居中一行，暫停在左、重播在右；大到一眼可見、一指可按；暖金光暈輕輕呼吸，按下有回彈；減少動態偏好時光暈靜止 ---------- */
+  .mvbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .mvbtn{flex:1 1 118px;max-width:236px;min-height:66px;border-radius:999px;cursor:pointer;
+    border:2px solid rgba(255,248,225,.9);
+    background:radial-gradient(circle at 32% 26%,#EED9A4,var(--gold) 56%,var(--gold-deep));
+    color:#fff;font-family:inherit;font-size:19px;font-weight:700;letter-spacing:.12em;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    box-shadow:0 10px 24px rgba(150,118,47,.28),0 0 22px rgba(233,201,120,.50),0 0 46px rgba(255,214,130,.30),inset 0 2px 3px rgba(255,255,255,.55);
+    transition:transform .15s;-webkit-tap-highlight-color:transparent;
+    animation:mvGlow 2.8s ease-in-out infinite}
+  .mvbtn:active{transform:scale(.96)}
+  @keyframes mvGlow{0%,100%{box-shadow:0 10px 24px rgba(150,118,47,.28),0 0 16px rgba(233,201,120,.38),0 0 34px rgba(255,214,130,.20),inset 0 2px 3px rgba(255,255,255,.55)}
+    50%{box-shadow:0 10px 24px rgba(150,118,47,.28),0 0 26px rgba(233,201,120,.62),0 0 54px rgba(255,214,130,.40),inset 0 2px 3px rgba(255,255,255,.55)}}
+  .mvbtn-alt{background:#FFFDF4;color:var(--gold-deep);border-color:var(--hair);
+    box-shadow:0 10px 24px rgba(150,118,47,.16),0 0 18px rgba(233,201,120,.35),0 0 30px rgba(255,214,130,.16),inset 0 2px 3px rgba(255,255,255,.7);
+    animation:none}
+  .mvbtn-ico{font-size:19px;letter-spacing:0}
+  @media (prefers-reduced-motion: reduce){ .mvbtn{animation:none} }
+
   /* 詩篇 */
   .lyrics{max-width:21em;}
   .lyrics p{
@@ -344,6 +364,10 @@
     <video id="mtv" controls preload="none" playsinline webkit-playsinline x5-playsinline x5-video-player-type="h5-page" src="mtv.mp4">
       您的瀏覽器不支援影片播放。
     </video>
+    <div class="mvbtns">
+      <button id="mvPauseBtn" type="button" class="mvbtn" aria-label="暫停"><span class="mvbtn-ico" aria-hidden="true">&#x25B6;</span><span class="mvbtn-txt">播放</span></button>
+      <button id="mvReplayBtn" type="button" class="mvbtn mvbtn-alt" aria-label="重播"><span class="mvbtn-ico" aria-hidden="true">&#x21BA;</span><span class="mvbtn-txt">重播</span></button>
+    </div>
   </section>
 
   <!-- 頁尾的一句話 -->
@@ -410,6 +434,9 @@
      再量一次位置，出界就糾正）＋ 段落停靠（獻詞借前奏分兩站停靠；曲終依次
      停靠影像、頁尾句、結尾）。觀眾一旦手動滑動，跟隨立即讓位。 */
   var followSuspended = false;   /* 觀眾手動滑動後置真，重新播放時清除 */
+  var suspendStamp = 0;   /* 最近一次手动滑动的时间戳（2026-11-12 修复） */
+  function followHeld(){ return followSuspended && (Date.now() - suspendStamp) < 6000; }
+
   var settleTimer = null;
   function scrollBehavior(){
     return (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth';
@@ -430,18 +457,18 @@
     { at: 17.5, ratio: 0.55, fired: false, el: function(){ return document.querySelector('#dedication .signoff'); } }
   ];
   function driveLeadStops(){
-    if (followSuspended || audio.currentTime >= 25) { return; }
+    if (followHeld() || audio.currentTime >= 25) { return; }
     leadStops.forEach(function(s){
       if (!s.fired && audio.currentTime >= s.at) { s.fired = true; scrollToEl(s.el(), s.ratio); }
     });
   }
   function resetLeadStops(){ leadStops.forEach(function(s){ s.fired = false; }); }
   function followLine(line){
-    if (followSuspended) { return; }
+    if (followHeld()) { return; }
     scrollToEl(line, 0.45);
     clearTimeout(settleTimer);
     settleTimer = setTimeout(function(){
-      if (followSuspended || !lastActive) { return; }
+      if (followHeld() || !lastActive) { return; }
       var r = lastActive.getBoundingClientRect();
       if (r.top < window.innerHeight * 0.10 || r.bottom > window.innerHeight * 0.90) {
         scrollToEl(lastActive, 0.45);
@@ -460,8 +487,9 @@
   }, { passive: true });
   function suspendFollow(){
     followSuspended = true;
+    suspendStamp = Date.now();
     clearTimeout(settleTimer);
-    if (walkRunning) { cancelWalk(); }
+    /* 2026-11-12 修复：手动滑动只是暂时让位（6 秒），不再永久取消曲终步行 */
   }
 
   var playHint = document.getElementById('playHint');
@@ -526,6 +554,33 @@
       if (fr) { fr.style.display = 'none'; }
     });
   }
+  /* ---- 影像的大按鈕：暫停／繼續與重播（boss 2026-11-12 定版）—— 按下暫停，影片與曲終步行一起停住等她回來；任何播放路徑（大按鈕或原生控件）都會解除停住，步行不會被一個暫停永久凍結 ---- */
+  var mvPauseBtn = document.getElementById('mvPauseBtn');
+  var mvReplayBtn = document.getElementById('mvReplayBtn');
+  var ctlHold = false;
+  var MV_TXT = { pause:'暫停', resume:'繼續播放', play:'播放' };
+  function mvBtnSync(){
+    if (!mvPauseBtn || !mtv) { return; }
+    var ico = mvPauseBtn.querySelector('.mvbtn-ico'), txt = mvPauseBtn.querySelector('.mvbtn-txt');
+    if (!mtv.paused && !mtv.ended) { ico.textContent = '\u23F8'; txt.textContent = MV_TXT.pause; }
+    else { ico.textContent = '\u25B6'; txt.textContent = (mtv.currentTime > 0.5 && !mtv.ended) ? MV_TXT.resume : MV_TXT.play; }
+  }
+  if (mtv && mvPauseBtn && mvReplayBtn) {
+    mvPauseBtn.addEventListener('click', function(){
+      if (mtv.paused || mtv.ended) { ctlHold = false; if (mtv.ended) { mtv.currentTime = 0; } safePlay(mtv); }
+      else { ctlHold = true; mtv.pause(); }
+    });
+    mvReplayBtn.addEventListener('click', function(){
+      ctlHold = false;
+      mtv.currentTime = 0;
+      safePlay(mtv);
+    });
+    mtv.addEventListener('play', function(){ ctlHold = false; mvBtnSync(); });
+    mtv.addEventListener('pause', mvBtnSync);
+    mtv.addEventListener('ended', mvBtnSync);
+    mvBtnSync();
+  }
+
 
   audio.addEventListener('ended', function(){
     document.body.classList.remove('playing');
@@ -553,7 +608,9 @@
   ];
   function walkAdvance(){
     walkTimer = null;
-    if (!walkRunning || followSuspended) { return; }
+    if (!walkRunning) { return; }
+    if (followHeld()) { walkTimer = setTimeout(walkAdvance, 1200); return; }
+    if (ctlHold) { walkTimer = setTimeout(walkAdvance, 1200); return; }
     walkIdx++;
     if (walkIdx >= walkSteps.length) { walkRunning = false; walkHeld = false; return; }
     var step = walkSteps[walkIdx];
@@ -571,7 +628,6 @@
     walkTimer = setTimeout(walkAdvance, step.dwell);
   }
   function startPostSongWalk(){
-    if (followSuspended) { return; }
     walkRunning = true; walkIdx = -1; walkHeld = false;
     clearTimeout(walkTimer);
     walkAdvance();
@@ -586,10 +642,16 @@
       if (walkRunning) { clearTimeout(walkTimer); walkTimer = null; walkHeld = true; }
     });
     mtv.addEventListener('ended', function(){
-      if (walkHeld) { walkHeld = false; walkTimer = setTimeout(walkAdvance, 3000); }
+      if (walkHeld) { walkHeld = false; walkTimer = setTimeout(walkAdvance, 2000); }
+      else if (!walkRunning && audio.ended) {
+        /* 她在步行之外自己看完了影片：从影像站之后接上步行，继续往下走 */
+        walkRunning = true; walkIdx = 0; walkHeld = false;
+        clearTimeout(walkTimer);
+        walkTimer = setTimeout(walkAdvance, 1500);
+      }
     });
     mtv.addEventListener('pause', function(){
-      if (walkHeld && !mtv.ended) { walkHeld = false; walkTimer = setTimeout(walkAdvance, 8000); }
+      if (walkHeld && !mtv.ended && !ctlHold) { walkHeld = false; walkTimer = setTimeout(walkAdvance, 8000); }
     });
   }
 
